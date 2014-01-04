@@ -17,4 +17,5 @@
     <copy_config>${SYSTEM_CONF}/apache/fastcgi_imscp.conf</copy_config>
     <copy_config>${SYSTEM_CONF}/apache/fcgid_imscp.conf</copy_config>
     <copy_config>${SYSTEM_CONF}/apache/logrotate.conf</copy_config>
+    <copy_config>${SYSTEM_CONF}/apache/ssl.conf</copy_config>
 </install>

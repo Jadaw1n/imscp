@@ -793,6 +793,13 @@ sub _buildApacheConfFiles
 		return $rs if $rs;
 	}
 
+	# Install SSL defaults conf file
+	$rs = $self->{'httpd'}->installConfFile(
+		"$self->{'apacheCfgDir'}/ssl.conf",
+				{ 'destination' => "$self->{'config'}->{'APACHE_MODS_DIR'}/ssl.conf" }
+	);
+	return $rs if $rs;
+
 	# Backup, build, store and install 00_nameserver.conf file
 
 	$rs = $self->{'httpd'}->apacheBkpConfFile("$self->{'apacheWrkDir'}/00_nameserver.conf");

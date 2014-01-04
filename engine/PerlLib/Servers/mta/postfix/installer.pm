@@ -96,6 +96,11 @@ sub install
 	my $rs = $self->{'hooksManager'}->trigger('beforeMtaInstall', 'postfix');
 	return $rs if $rs;
 
+	if ($main::imscpConfig{'SSL_ENABLED'} eq 'yes') {
+		$rs = $self->_generateDhKeys();
+		return $rs if $rs;
+	}
+
 	$rs = $self->_buildConf();
 	return $rs if $rs;
 
@@ -305,6 +310,47 @@ sub _addUsersAndGroups
 	}
 
 	$self->{'hooksManager'}->trigger('afterMtaAddUsersAndGroups');
+}
+
+=item _generateDhKeys()
+
+ Generate Diffie-Hellmann Keys which are needed for perfect forward secrecy.
+
+=cut
+
+sub _generateDhKeys
+{
+	my $self = shift;
+	
+	my $dh512 = $self->{'config'}->{'POSTFIX_CONF_DIR'} . '/dh_512.pem';
+	my $dh2048 = $self->{'config'}->{'POSTFIX_CONF_DIR'} . '/dh_2048.pem';
+
+	if (-e $dh512 and -e $dh2048) {
+		# Nothing to do here!
+		return 0;
+	}
+
+	iMSCP::Dialog->factory()->infobox("Generating Diffie-Hellmann Keys for Postfix. \n\nThese keys are used for better encrypting the outgoing mail traffic. \n\nThis is done only once (or after the DH keys were deleted) but might take a while (up to fivee minutes).");
+	
+	unless (-e $dh512) {
+		system ("openssl gendh -out $dh512 -2 512");
+
+		unless(-e $dh512) {
+			# exit if the file wasn't generated.
+			return 1;
+		}
+	}
+
+	unless (-e $dh2048) {
+		system ("openssl gendh -out $dh2048 -2 2048");
+
+		unless(-e $dh2048) {
+			# exit if the file wasn't generated.
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 =item _makeDirs()

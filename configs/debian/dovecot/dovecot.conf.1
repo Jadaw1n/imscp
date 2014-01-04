@@ -71,6 +71,9 @@ protocol lda {
 	postmaster_address = postmaster@{HOST_NAME}
 }
 
+# Logging
+login_log_format_elements = user=<%u> method=%m rip=%r lip=%l mpid=%e %c %k
+
 # SSL
 
 ssl = {DOVECOT_SSL}
