@@ -323,9 +323,9 @@ sub _generateDhKeys
 	my $self = shift;
 	
 	my $dh512 = $self->{'config'}->{'POSTFIX_CONF_DIR'} . '/dh_512.pem';
-	my $dh2048 = $self->{'config'}->{'POSTFIX_CONF_DIR'} . '/dh_2048.pem';
+	my $dh1024 = $self->{'config'}->{'POSTFIX_CONF_DIR'} . '/dh_1024.pem';
 
-	if (-e $dh512 and -e $dh2048) {
+	if (-e $dh512 and -e $dh1024) {
 		# Nothing to do here!
 		return 0;
 	}
@@ -341,10 +341,10 @@ sub _generateDhKeys
 		}
 	}
 
-	unless (-e $dh2048) {
-		system ("openssl gendh -out $dh2048 -2 2048");
+	unless (-e $dh1024) {
+		system ("openssl gendh -out $dh1024 -2 1024");
 
-		unless(-e $dh2048) {
+		unless(-e $dh1024) {
 			# exit if the file wasn't generated.
 			return 1;
 		}
@@ -606,6 +606,7 @@ sub _buildMainCfFile
 
 	$content = process(
 		{
+			MTA_CONF_PATH => $self->{'config'}->{'POSTFIX_CONF_DIR'},
 			MTA_INET_PROTOCOLS => $baseServerIpType,
 			MTA_SMTP_BIND_ADDRESS => ($baseServerIpType eq 'ipv4') ? $main::imscpConfig{'BASE_SERVER_IP'} : '',
 			MTA_SMTP_BIND_ADDRESS6 => ($baseServerIpType eq 'ipv6') ? $main::imscpConfig{'BASE_SERVER_IP'} : '',

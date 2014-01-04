@@ -104,8 +104,8 @@ smtpd_data_restrictions = reject_multi_recipient_bounce,
 {SSL}smtpd_tls_key_file = {GUI_CERT_DIR}/{MTA_HOSTNAME}.pem
 {SSL}smtpd_tls_auth_only = no
 {SSL}smtpd_tls_received_header = yes
-{SSL}smtpd_tls_dh512_param_file = dh_512.pem
-{SSL}smtpd_tls_dh1024_param_file = dh_1024.pem
+{SSL}smtpd_tls_dh512_param_file = {MTA_CONF_PATH}/dh_512.pem
+{SSL}smtpd_tls_dh1024_param_file = {MTA_CONF_PATH}/dh_1024.pem
 {SSL}smtpd_tls_eecdh_grade = strong
 {SSL}tls_preempt_cipherlist = yes
 
