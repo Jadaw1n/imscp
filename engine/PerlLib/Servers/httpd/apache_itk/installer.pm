@@ -612,7 +612,12 @@ sub _buildApacheConfFiles
 		return $rs if $rs;
 	}
 
-	# Install SSL defaults conf file
+	# Backup and install SSL defaults conf file
+	if(-f "$self->{'config'}->{'APACHE_MODS_DIR'}/ssl.conf") {
+		$rs = $self->_bkpConfFile("$self->{'config'}->{'APACHE_MODS_DIR'}/ssl.conf");
+		return $rs if $rs;
+	}
+	
 	$rs = $self->{'httpd'}->installConfFile(
 		"$self->{'apacheCfgDir'}/ssl.conf",
 				{ 'destination' => "$self->{'config'}->{'APACHE_MODS_DIR'}/ssl.conf" }
@@ -732,9 +737,6 @@ sub _buildMasterVhostFiles
 					my $customBlock =
 						$customTagBegin .
 						getBloc($customTagBegin, $customTagEnding, $$fileContent) .
-						"    RewriteEngine On\n" .
-						"    RewriteCond %{HTTPS} off\n" .
-						"    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]\n" .
 						$customTagEnding;
 
 					$$fileContent = replaceBloc($customTagBegin, $customTagEnding, $customBlock, $$fileContent);

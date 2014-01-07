@@ -325,29 +325,24 @@ sub _generateDhKeys
 	my $dh512 = $self->{'config'}->{'POSTFIX_CONF_DIR'} . '/dh_512.pem';
 	my $dh1024 = $self->{'config'}->{'POSTFIX_CONF_DIR'} . '/dh_1024.pem';
 
-	if (-e $dh512 and -e $dh1024) {
+	my $rs;
+
+	if (-f $dh512 and -f $dh1024) {
 		# Nothing to do here!
 		return 0;
 	}
-
+	
 	iMSCP::Dialog->factory()->infobox("Generating Diffie-Hellmann Keys for Postfix. \n\nThese keys are used for better encrypting the outgoing mail traffic. \n\nThis is done only once (or after the DH keys were deleted) but might take a while (up to fivee minutes).");
 	
-	unless (-e $dh512) {
-		system ("openssl gendh -out $dh512 -2 512");
+	my $openSSL = iMSCP::OpenSSL->getInstance();
+	$openSSL->{'openssl_path'} = $main::imscpConfig{'CMD_OPENSSL'};
 
-		unless(-e $dh512) {
-			# exit if the file wasn't generated.
-			return 1;
-		}
+	unless (-f $dh512) {
+		$openSSL->ssl_generate_dh_key(512, $dh512);
 	}
 
-	unless (-e $dh1024) {
-		system ("openssl gendh -out $dh1024 -2 1024");
-
-		unless(-e $dh1024) {
-			# exit if the file wasn't generated.
-			return 1;
-		}
+	unless (-f $dh1024) {
+		$openSSL->ssl_generate_dh_key(1024, $dh1024);
 	}
 
 	return 0;

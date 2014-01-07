@@ -324,6 +324,38 @@ sub ssl_export_all
 	0;
 }
 
+=item
+
+ Generate Diffie-Hellmann key
+ 
+ Arguments:
+  1: bit length of key (should be 2 to the power of something, e.g. 1024)
+	2: filename to save the key to
+
+ Return int 0 on success, other on failure
+
+=cut
+
+sub ssl_generate_dh_key
+{
+	my $self = shift;
+	my $bitlen = shift;
+	my $filename = shift;
+
+	my ($stdout, $stderr);
+	my $rs = execute(
+		"$self->{'openssl_path'} dhparam -out $filename -2 $bitlen", \$stdout, \$stderr
+	);
+	debug($stdout) if $stdout;
+	warning($stderr) if $stderr && ! $rs;
+	if ($rs) {
+		error("DH key couldn't be generated!\n\n" . ($stderr ? ": $stderr" : '') . '.');
+		return $rs;
+	}
+
+	return 0;
+}
+
 =back
 
 =head1 PRIVATE METHODS
