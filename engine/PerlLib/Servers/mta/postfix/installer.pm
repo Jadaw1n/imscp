@@ -325,7 +325,7 @@ sub _generateDhKeys
 	my $dh512 = $self->{'config'}->{'POSTFIX_CONF_DIR'} . '/dh_512.pem';
 	my $dh1024 = $self->{'config'}->{'POSTFIX_CONF_DIR'} . '/dh_1024.pem';
 
-	my $rs;
+	my $rs = 0;
 
 	if (-f $dh512 and -f $dh1024) {
 		# Nothing to do here!
@@ -338,11 +338,13 @@ sub _generateDhKeys
 	$openSSL->{'openssl_path'} = $main::imscpConfig{'CMD_OPENSSL'};
 
 	unless (-f $dh512) {
-		$openSSL->ssl_generate_dh_key(512, $dh512);
+		$rs = $openSSL->ssl_generate_dh_key(512, $dh512);
+		return $rs if $rs;
 	}
 
 	unless (-f $dh1024) {
-		$openSSL->ssl_generate_dh_key(1024, $dh1024);
+		$rs = $openSSL->ssl_generate_dh_key(1024, $dh1024);
+		return $rs if $rs;
 	}
 
 	return 0;

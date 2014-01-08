@@ -1030,6 +1030,9 @@ sub _buildMasterVhostFiles
 					my $customBlock =
 						$customTagBegin .
 						getBloc($customTagBegin, $customTagEnding, $$fileContent) .
+						"    RewriteEngine On\n" .
+						"    RewriteCond %{HTTPS} off\n" .
+						"    RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]\n" .
 						$customTagEnding;
 
 					$$fileContent = replaceBloc($customTagBegin, $customTagEnding, $customBlock, $$fileContent);
